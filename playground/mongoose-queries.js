@@ -30,15 +30,19 @@ const {Users} = require('./../server/models/users');
 // }).catch((e) => console.log(e));
 
 
-var userId = '5c387a1b495169174e782f49';
+// var userId = '5c387a1b495169174e782f49';
 
-if (!ObjectId.isValid(userId)) {
-    console.log('User Id not Valid!');
-}
+// if (!ObjectId.isValid(userId)) {
+//     console.log('User Id not Valid!');
+// }
 
-Users.findById(userId).then((user) => {
-    if (!user) {
-        return console.log('User not found.');
+
+Users.findById('5c387a1b495169174e782f49').then((user) => { 
+    if(!user) {
+        return console.log('unable to find user');
     }
-    console.log('User by Id', user);
-}).catch((e) => console.log(e));
+    console.log(JSON.stringify(user, undefined, 2));
+
+}, (e) => {
+    console.log(e);
+});
