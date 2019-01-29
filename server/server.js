@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
-var {Users} = require('./models/users');
+var {User} = require('./models/users');
 
 var app = express();
 const port = process.env.PORT || 3000
@@ -96,6 +96,25 @@ app.patch('/todos/:id', (req, res) => {
         res.status(400).send();
     });
 });
+
+
+
+// Users 
+app.post('/users', (req, res) => {
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User(body);
+  
+    user.save().then(() => {
+      return user.generateAuthToken();
+    }).then((token) => {
+      res.header('x-auth', token).send(user);
+    }).catch((e) => {
+      res.status(400).send(e);
+    })
+  });
+  
+
+
 
 app.listen(port, () => {  
     console.log(`Started on Port ${port}`);
