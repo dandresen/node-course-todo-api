@@ -276,25 +276,49 @@ describe('POST /users/login', () => {
 
     it('should reject invalid login', (done) => {
         request(app)
-        .post('/users/login')
-        .send({
-            email: 'badEmail',
-            password: users[1].password
-        })
-        .expect(400)   
-        .expect((res) => {
-            expect(res.headers['x-auth']).toBeFalsy();
-        })
-        .end((err, res) => {
-            if (err) {
-                return done(err);
-            }
+            .post('/users/login')
+            .send({
+                email: 'badEmail',
+                password: users[1].password
+            })
+            .expect(400)   
+            .expect((res) => {
+                expect(res.headers['x-auth']).toBeFalsy();
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
 
-            User.findById(users[1]._id).then((user) => {
-                expect(user.tokens[0]).toBeUndefined();
-                done();
-            }).catch((e) => done(e));
-        });
+                User.findById(users[1]._id).then((user) => {
+                    expect(user.tokens[0]).toBeUndefined();
+                    done();
+                }).catch((e) => done(e));
+            });
 
     });
+});
+
+describe('DELETE /users/me/token', () => {
+    it('should remove auth token on logout', (done) => {
+        //DELETE req
+        //SET x-auth = first token arrary
+        // 200 async end call, find user and verify token array lenght = 0 
+        request(app)
+            .delete('/users/me/token')
+            .set('x-auth',users[0].tokens[0].token)
+            .expect(200)
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+
+                User.findById(users[0]._id).then((user) => {
+                    expect(user.tokens.length).toBe(0);
+                    done();
+                }).catch((e) => done(e));
+
+            });
+    });
+
 });
